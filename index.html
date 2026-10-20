@@ -7,6 +7,11 @@
 <meta name="description" content="산재맵 — 근로복지공단 산재보험 지정의료기관 6,742곳과 소음성 난청 청력 특진 의뢰 의료기관 220곳, 공단 지사를 한 지도에서 찾는 무료 산재보험 의료기관 찾기 서비스입니다.">
 <meta name="naver-site-verification" content="bf1c7e44def9676c2714d93414ff11459d35865f">
 <meta name="robots" content="index,follow">
+<!-- 첫 화면은 네이버 소유확인 태그(위)를 두는 자리로만 남기고, 사람은 바로 산재맵으로 보낸다(2026-10-20 사용자 요청).
+     replace 라 뒤로 가기에 이 화면이 끼지 않는다. 자바스크립트가 꺼져 있으면 meta refresh 가, 그것도 안 되면 아래 「산재맵 열기」가 받는다. -->
+<script>location.replace("/sanjaemap/" + location.search + location.hash);</script>
+<meta http-equiv="refresh" content="0; url=/sanjaemap/">
+<link rel="canonical" href="https://himnuszkorea.github.io/sanjaemap/">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="산재맵">
