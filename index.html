@@ -7,11 +7,14 @@
 <meta name="description" content="산재맵 — 근로복지공단 산재보험 지정의료기관 6,742곳과 소음성 난청 청력 특진 의뢰 의료기관 220곳, 공단 지사를 한 지도에서 찾는 무료 산재보험 의료기관 찾기 서비스입니다.">
 <meta name="naver-site-verification" content="bf1c7e44def9676c2714d93414ff11459d35865f">
 <meta name="robots" content="index,follow">
-<!-- 첫 화면은 네이버 소유확인 태그(위)를 두는 자리로만 남기고, 사람은 바로 산재맵으로 보낸다(2026-10-20 사용자 요청).
-     replace 라 뒤로 가기에 이 화면이 끼지 않는다. 자바스크립트가 꺼져 있으면 meta refresh 가, 그것도 안 되면 아래 「산재맵 열기」가 받는다. -->
-<script>location.replace("/sanjaemap/" + location.search + location.hash);</script>
-<meta http-equiv="refresh" content="0; url=/sanjaemap/">
-<link rel="canonical" href="https://himnuszkorea.github.io/sanjaemap/">
+<!-- 2026-10-21 A안(사용자 결정): 구글이 사이트 이름을 이 첫 화면에서 읽으므로 넘기지 않는 안내 화면으로 둔다.
+     자동 넘김(location.replace·meta refresh·타이머)을 다시 넣지 말 것 — 넘김 페이지로 취급돼 사이트 이름·순위 효과가 사라진다. -->
+<link rel="canonical" href="https://himnuszkorea.github.io/">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"산재맵",
+ "alternateName":["산재보험 지정의료기관 검색지도","산재 특진 의료기관 지도"],
+ "url":"https://himnuszkorea.github.io/"}
+</script>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="산재맵">
@@ -28,9 +31,10 @@ body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:c
 main{max-width:560px;width:100%;background:var(--panel);border-top:4px solid var(--gold);border-radius:10px;padding:32px 28px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
 h1{margin:0 0 6px;font-size:32px}
 h1 small{display:block;font-size:15px;font-weight:500;color:var(--muted);margin-top:4px}
-ul{padding-left:20px;line-height:1.8;margin:18px 0}
-a.go{display:inline-block;margin-top:8px;padding:12px 22px;border-radius:8px;background:var(--gold);color:#fff;font-weight:700;text-decoration:none}
+a.go{display:block;text-align:center;margin-top:18px;padding:16px 22px;font-size:18px;border-radius:8px;background:var(--gold);color:#fff;font-weight:700;text-decoration:none}
 a.go:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+p.tip{font-size:13px;color:var(--muted);margin:12px 0 0;text-align:center}
+p.tip a{color:inherit}
 p.note{color:var(--muted);font-size:12px;margin-top:22px;line-height:1.6}
 p.note a{color:inherit}
 </style>
@@ -38,13 +42,9 @@ p.note a{color:inherit}
 <body>
 <main>
   <h1>산재맵<small>산재보험 지정의료기관·산재 특진 의료기관 지도</small></h1>
-  <p>전국 산재보험 의료기관을 지도에서 찾아보세요.</p>
-  <ul>
-    <li>근로복지공단 산재보험 지정의료기관 6,742곳</li>
-    <li>소음성 난청 청력검사 특별진찰 의뢰기관 220곳</li>
-    <li>근로복지공단 지사 · 가까운 순 정렬 · 카카오/네이버 길찾기</li>
-  </ul>
+  <p>산재보험 지정의료기관 6,742곳과 소음성 난청 특진 의뢰기관 220곳, 근로복지공단 지사를 한 지도에서 찾습니다.</p>
   <a class="go" href="/sanjaemap/">산재맵 열기</a>
+  <p class="tip">다음부터는 <a href="/sanjaemap/">himnuszkorea.github.io/sanjaemap/</a> 을 즐겨찾기하면 바로 열립니다.</p>
   <p class="note">개인이 공공데이터로 만든 참고용 지도이며 근로복지공단 공식 서비스가 아닙니다 · 자료: 공공데이터포털 <a href="https://www.data.go.kr/data/3044320/fileData.do">근로복지공단 산재보험 지정의료기관 현황정보</a>(2025-12-31 기준) · 지정·해지가 수시로 있으니 방문 전 전화로 확인하세요 · 배경지도 © 국토교통부 브이월드</p>
 </main>
 </body>
