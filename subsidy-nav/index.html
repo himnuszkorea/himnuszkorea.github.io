@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>지원금 내비게이션</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* 배치: 왼쪽 입력 서식(접수 서류처럼 칸 번호) · 오른쪽 판정 결과와 월별 표, 좁으면 한 줄로 */
+:root{
+  --bg:#f3f5f6; --paper:#ffffff; --ink:#17242b; --muted:#5b6a72; --line:#d5dde1;
+  --accent:#0f6b6f; --accent-soft:#e3f0ef; --warn:#9a5b00; --warn-soft:#fbf1df; --none:#8a3b3b; --none-soft:#f7e7e6;
+  --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-num:"IBM Plex Mono","Consolas",monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11181b; --paper:#182226; --ink:#e4ecef; --muted:#9aabb2; --line:#2c3a40;
+  --accent:#5fc2c0; --accent-soft:#163437; --warn:#e7b25a; --warn-soft:#33281a; --none:#e59a96; --none-soft:#3a2221; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11181b; --paper:#182226; --ink:#e4ecef; --muted:#9aabb2; --line:#2c3a40;
+  --accent:#5fc2c0; --accent-soft:#163437; --warn:#e7b25a; --warn-soft:#33281a; --none:#e59a96; --none-soft:#3a2221; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header h1{font-size:1.75rem;font-weight:700;margin:0;letter-spacing:-0.01em;text-wrap:balance}
+header p{margin:4px 0 0;color:var(--muted);max-width:68ch}
+.notice{border:1px solid var(--warn);background:var(--warn-soft);color:var(--ink);border-radius:6px;padding:10px 14px;font-size:.9rem}
+.notice b{color:var(--warn)}
+.grid{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:18px}
+.panel h2{font-size:1rem;margin:0 0 12px;font-weight:600}
+fieldset{border:0;padding:0;margin:0 0 18px;display:flex;flex-direction:column;gap:10px}
+legend{font-weight:600;font-size:.92rem;margin-bottom:6px;display:flex;gap:8px;align-items:baseline}
+legend .no{font-family:var(--f-num);color:var(--accent);font-size:.85rem}
+label{display:flex;flex-direction:column;gap:4px;font-size:.88rem;color:var(--muted)}
+input[type=number],select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:7px 9px;width:100%;font-variant-numeric:tabular-nums}
+input:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:420px){.row4{grid-template-columns:1fr 1fr}}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg label{flex-direction:row;align-items:center;gap:6px;border:1px solid var(--line);border-radius:5px;padding:6px 10px;color:var(--ink);cursor:pointer;background:var(--bg)}
+.seg input{accent-color:var(--accent)}
+.seg label:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.hint{font-size:.8rem;color:var(--muted);margin:0}
+.results{display:flex;flex-direction:column;gap:20px;min-width:0}
+.verdict{display:flex;flex-direction:column;gap:6px;border-left:4px solid var(--accent);padding:4px 0 4px 14px}
+.verdict .tag{font-family:var(--f-num);font-size:.8rem;color:var(--accent)}
+.verdict h3{margin:0;font-size:1.2rem;text-wrap:balance}
+.verdict p{margin:0;color:var(--muted);max-width:70ch}
+.cmp{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:640px){.cmp{grid-template-columns:minmax(0,1fr)}}
+.card{border:1px solid var(--line);border-radius:7px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;background:var(--paper)}
+.card.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.card .h{font-size:.85rem;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.card .big{font-family:var(--f-num);font-size:1.35rem;font-weight:500;font-variant-numeric:tabular-nums}
+.card .sub{font-size:.82rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.pill{display:inline-block;font-size:.75rem;border-radius:999px;padding:1px 8px;border:1px solid currentColor;white-space:nowrap}
+.pill.ok{color:var(--accent)} .pill.part{color:var(--warn)} .pill.no{color:var(--none)}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.86rem;font-variant-numeric:tabular-nums}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{color:var(--muted);font-weight:500;font-size:.8rem}
+td.num{font-family:var(--f-num)}
+tr.sum td{font-weight:600;border-top:2px solid var(--ink)}
+tr.split td{border-top:2px dashed var(--line)}
+.why{margin:0;padding-left:1.1em;color:var(--ink);display:flex;flex-direction:column;gap:4px;font-size:.9rem}
+details{border-top:1px solid var(--line);padding-top:12px}
+summary{cursor:pointer;font-weight:600;font-size:.92rem}
+.src{font-size:.82rem;color:var(--muted)}
+.src li{margin-bottom:3px}
+.check{font-family:var(--f-num);font-size:.85rem}
+.check .ok{color:var(--accent)} .check .bad{color:var(--none)}
+.err{color:var(--none);font-size:.88rem;margin:0}
+@media (prefers-reduced-motion:no-preference){.card{transition:border-color .15s}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>지원금 내비게이션</h1>
+    <p>산재로 장해가 남은 근로자를 원래 회사가 다시 고용할 때, 근로복지공단 <b>직장복귀지원금</b>과 한국장애인고용공단 <b>장애인 고용장려금</b>이 서로를 빼고 나면 실제로 얼마를 받는지 계산합니다. 근로자가 장애인 등록을 하는지에 따라 결과가 어떻게 바뀌는지도 나란히 보여 줍니다.</p>
+  </header>
+  <div class="notice"><b>비공식 모의 계산입니다.</b> 공개된 법령·고시·한국장애인고용공단 안내만으로 만든 시제품이며, 근로복지공단·한국장애인고용공단의 공식 도구가 아닙니다. 실제 지급 여부와 금액은 각 기관의 심사로 정해집니다. 입력한 값은 이 화면 밖으로 보내지 않습니다.</div>
+
+  <div class="grid">
+    <form class="panel" id="f" autocomplete="off">
+      <h2>입력 (예시 값이 들어 있습니다)</h2>
+      <fieldset>
+        <legend><span class="no">1</span>사업장</legend>
+        <div class="row2">
+          <label>상시근로자 수(복귀 근로자 포함)<input type="number" id="n" min="1" max="100000" value="120"></label>
+          <label>구분<select id="sector"><option value="private">민간 (의무고용률 3.1%)</option><option value="public">공공기관 등 (3.8%)</option></select></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend><span class="no">2</span>이미 일하는 장애인 직원</legend>
+        <p class="hint">고용보험에 가입했고 최저임금 이상을 받는 사람만 적습니다. 모두 복귀 근로자보다 먼저 입사(등록)한 것으로 봅니다.</p>
+        <div class="row4">
+          <label>경증 남<input type="number" id="em" min="0" max="999" value="4"></label>
+          <label>경증 여<input type="number" id="ef" min="0" max="999" value="0"></label>
+          <label>중증 남<input type="number" id="sm" min="0" max="999" value="1"></label>
+          <label>중증 여<input type="number" id="sf" min="0" max="999" value="0"></label>
+        </div>
+        <label>이분들의 평균 월임금(원)<input type="number" id="ew" min="0" step="10000" value="2600000"></label>
+      </fieldset>
+      <fieldset>
+        <legend><span class="no">3</span>복귀하는 근로자</legend>
+        <label>산재 장해등급<select id="grade">
+          <option value="g1">제1급 ~ 제3급</option><option value="g4">제4급 ~ 제9급</option>
+          <option value="g10" selected>제10급 ~ 제12급</option><option value="g13">제13급 ~ 제14급</option></select></label>
+        <div class="row2">
+          <label>성별<select id="sex"><option value="M">남</option><option value="F">여</option></select></label>
+          <label>월임금(원)<input type="number" id="wage" min="0" step="10000" value="2800000"></label>
+        </div>
+        <div>
+          <p class="hint" style="margin-bottom:6px">장애인 등록(장애인복지법 기준) — 오른쪽에서 세 경우를 모두 비교합니다</p>
+          <div class="seg" role="radiogroup" aria-label="장애인 등록">
+            <label><input type="radio" name="reg" id="reg-none" value="none" checked>등록 안 함</label>
+            <label><input type="radio" name="reg" id="reg-mild" value="mild">경증으로 등록</label>
+            <label><input type="radio" name="reg" id="reg-severe" value="severe">중증으로 등록</label>
+          </div>
+        </div>
+      </fieldset>
+      <p class="err" id="err" hidden></p>
+      <p class="hint">계산 기준일: 2026년. 직장복귀지원금은 요양종결(복귀)일부터 6개월 이상 고용을 유지해야 받습니다.</p>
+    </form>
+
+    <section class="results" aria-live="polite">
+      <div class="panel">
+        <div class="verdict" id="verdict"></div>
+      </div>
+      <div class="panel">
+        <h2>장애인 등록에 따라 달라지는 결과 (24개월 합계)</h2>
+        <div class="cmp" id="cmp"></div>
+      </div>
+      <div class="panel">
+        <h2 id="tblTitle">월별 지급 예상</h2>
+        <div class="tablewrap"><table id="tbl"></table></div>
+        <p class="hint" style="margin-top:8px">두 법령이 서로의 지원금을 빼도록 정하고 있어(산재보험법 제75조 제4항, 장애인고용법 시행령 제29조 제1항), 같은 달의 합계는 두 금액 중 큰 쪽입니다. 어느 기관이 얼마를 주는지는 먼저 지급된 쪽에 따라 달라지므로 두 경우를 함께 적었습니다.</p>
+      </div>
+      <div class="panel">
+        <h2>판정 이유</h2>
+        <ul class="why" id="why"></ul>
+        <details style="margin-top:14px">
+          <summary>함께 알아 둘 것</summary>
+          <ul class="src" style="margin-top:8px">
+            <li>직장적응훈련비(월 45만원 한도)·재활운동비(월 15만원 한도)는 실제 든 비용을 3개월 이내로 따로 받을 수 있으나, 이 계산에는 넣지 않았습니다.</li>
+            <li>50인 이상 사업장이 의무고용률에 못 미치면 장애인 등록 근로자 1명이 늘 때 장애인 고용부담금이 줄어듭니다. 부담기초액은 매년 고시되므로 금액은 계산하지 않았습니다.</li>
+            <li>장려금은 월별 상시근로자 수로 계산합니다. 달마다 인원이 바뀌면 결과도 달라집니다.</li>
+            <li>장려금은 장애인 근로자가 2명 이상일 때부터 받을 수 있고, 단가는 월임금의 60%를 넘지 않습니다.</li>
+          </ul>
+        </details>
+        <details style="margin-top:12px">
+          <summary>계산 근거와 검산</summary>
+          <ul class="src" style="margin-top:8px">
+            <li>직장복귀지원금 = 고시 상한과 사업주가 지급한 임금 중 적은 금액, 12개월 이내 — 산재보험법 제75조 제2항</li>
+            <li>상한 월 80만(1~3급)·60만(4~9급)·45만(10~12급) — 고용노동부 고시 「직업재활급여 상한금액」 제2025-89호(2026. 1. 1. 시행)</li>
+            <li>고용의무로 장애인을 고용한 경우 직장복귀지원금만 미지급 — 산재보험법 제75조 제5항, 시행령 제71조 제2항 제1호</li>
+            <li>장려금 기준인원 = 월 상시근로자 × 의무고용률(소수점 이하 올림), 입사일 순으로 산입하고 입사 뒤 장애인이 되면 등록일을 입사일로 봄, 단가 경증 남 35만·여 50만 / 중증 남 70만·여 90만 — 한국장애인고용공단 「장애인 고용장려금」 제도설명·계산방법</li>
+            <li>의무고용 인원(부담금 기준)은 소수점 이하를 버리고, 중증장애인은 2명으로 셉니다 — 장애인고용촉진법 제28조·제28조의3. 복귀 근로자가 이 인원을 채우는 자리에 들어가면 「고용의무로 고용한 경우」로 보았습니다(추정 — 실제 판정은 근로복지공단 확인 필요).</li>
+          </ul>
+          <div class="check" id="check" style="margin-top:8px"></div>
+        </details>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script id="calc">
+// ---- 계산 규칙 (공개 법령·고시·KEAD 안내) ----
+const RATE_PERMILLE = { private: 31, public: 38 };            // 의무고용률 3.1% / 3.8%
+const DRW_CAP = { g1: 800000, g4: 600000, g10: 450000, g13: 0 }; // 고시 제2025-89호
+const UNIT = { mildM: 350000, mildF: 500000, sevM: 700000, sevF: 900000 };
+const DRW_MONTHS = 12;
+
+// 장려금 기준인원: 올림 (정수 연산으로 부동소수 오차 회피)
+const incentiveBase = (n, r) => Math.floor((n * r + 999) / 1000);
+// 의무고용 인원(부담금 기준): 버림
+const obligation = (n, r) => Math.floor((n * r) / 1000);
+
+function unitFor(w) {
+  const u = UNIT[(w.sev === 'severe' ? 'sev' : 'mild') + (w.sex === 'F' ? 'F' : 'M')];
+  return Math.min(u, Math.floor(w.wage * 0.6));
+}
+
+// 한 달 장려금. workers: {name, hire, sev, sex, wage, insured, minWage}
+function incentiveMonth(n, r, workers) {
+  const base = incentiveBase(n, r);
+  const total = workers.length;
+  const eligible = workers.filter(w => w.insured && w.minWage);
+  const excluded = total - eligible.length;
+  if (total < 2) return { base, total, excluded, paid: [], amount: 0 };
+  const sevRank = w => (w.sev === 'severe' ? 1 : 0), sexRank = w => (w.sex === 'F' ? 1 : 0);
+  const sorted = [...eligible].sort((a, b) =>
+    a.hire - b.hire || sevRank(a) - sevRank(b) || sexRank(a) - sexRank(b) || a.wage - b.wage);
+  const paid = sorted.slice(base).map(w => ({ ...w, unit: unitFor(w) }));
+  return { base, total, excluded, paid, amount: paid.reduce((s, w) => s + w.unit, 0) };
+}
+
+function existingWorkers(ex) {
+  const list = [];
+  const add = (k, sev, sex) => { for (let i = 0; i < ex[k]; i++) list.push({ name: '기존' + k + i, hire: 0, sev, sex, wage: ex.wage, insured: true, minWage: true }); };
+  add('mm', 'mild', 'M'); add('mf', 'mild', 'F'); add('sm', 'severe', 'M'); add('sf', 'severe', 'F');
+  return list;
+}
+
+// 복귀 근로자 한 명에 대한 결과
+function evaluate(inp, reg) {
+  const r = RATE_PERMILLE[inp.sector];
+  const n = inp.n;
+  const cap = DRW_CAP[inp.grade];
+  const ex = existingWorkers(inp.ex);
+  const registered = reg !== 'none';
+  const why = [];
+  // 장려금: 복귀 근로자를 넣었을 때와 뺐을 때의 차이(등록일 = 입사일이라 가장 늦게 산입)
+  let inc = 0, incInfo = null;
+  if (registered) {
+    const me = { name: '복귀 근로자', hire: 1, sev: reg, sex: inp.sex, wage: inp.wage, insured: true, minWage: true };
+    const withMe = incentiveMonth(n, r, [...ex, me]);
+    const without = incentiveMonth(n, r, ex);
+    inc = withMe.amount - without.amount;
+    incInfo = { base: withMe.base, total: withMe.total, unit: unitFor(me) };
+  }
+  // 직장복귀지원금
+  const duty = n >= 50;
+  const exWeighted = inp.ex.mm + inp.ex.mf + 2 * (inp.ex.sm + inp.ex.sf);
+  const ob = obligation(n, r);
+  let drwOk = cap > 0, branch;
+  if (!registered) branch = duty ? 'C' : 'A';
+  else if (!duty) branch = 'B';
+  else if (exWeighted < ob) { branch = 'D1'; drwOk = false; }
+  else branch = 'D2';
+  const drw = drwOk ? Math.min(cap, inp.wage) : 0;
+
+  // 이유 문장
+  if (cap === 0) why.push('장해등급 제13~14급은 직장복귀지원금 상한 고시에 없어 대상이 아닌 것으로 보았습니다.');
+  if (!registered) why.push('장애인 등록을 하지 않으면 산재 장해등급만으로는 장애인고용법상 장애인이 아니어서 장려금 대상이 아닙니다.');
+  if (branch === 'A' || branch === 'B') why.push(`상시근로자 ${n}명으로 50명 미만이라 장애인 고용의무가 없습니다. 직장복귀지원금은 고용의무와 관계없이 대상입니다.`);
+  if (branch === 'C') why.push(`50명 이상 사업장이지만 근로자가 장애인 등록을 하지 않아 「고용의무로 고용한 장애인」이 아니므로 직장복귀지원금 대상입니다.`);
+  if (branch === 'D1') why.push(`의무고용 인원은 ${ob}명(버림)인데 기존 장애인 직원은 ${exWeighted}명분(중증 2배)이라, 복귀 근로자가 의무 인원을 채우는 자리에 들어갑니다. 이 경우 직장복귀지원금은 지급되지 않습니다(추정 — 근로복지공단 확인 필요). 대신 고용부담금이 줄어듭니다.`);
+  if (branch === 'D2') why.push(`기존 장애인 직원 ${exWeighted}명분(중증 2배)이 의무고용 인원 ${ob}명을 이미 채워, 복귀 근로자는 의무를 넘는 인원이라 직장복귀지원금 대상입니다. 장려금은 기준인원(올림)을 넘어야 나오므로 따로 판정합니다 — 의무고용 인원은 버림, 장려금 기준인원은 올림이라 두 숫자가 다를 수 있습니다.`);
+  if (registered && incInfo) {
+    if (incInfo.total < 2) why.push('장애인 근로자가 복귀 근로자 한 명뿐이라 장려금 대상(2명 이상)이 아닙니다.');
+    else if (inc === 0) why.push(`장려금 기준인원 ${incInfo.base}명(올림)을 복귀 근로자까지 합쳐도 넘지 못해 장려금이 늘지 않습니다.`);
+    else why.push(`복귀 근로자는 장애인 등록일이 입사일로 간주돼 가장 늦게 산입되므로 기준인원 ${incInfo.base}명을 넘는 인원이 되어, 월 ${won(inc)} 장려금이 늘어납니다(단가와 월임금 60% 중 적은 금액).`);
+  }
+
+  const months = [];
+  for (let m = 1; m <= 24; m++) {
+    const d = m <= DRW_MONTHS ? drw : 0;
+    const both = Math.max(d, inc);
+    months.push({ m, drw: d, inc, both, aInc: inc, aDrw: Math.max(0, d - inc), bDrw: d, bInc: Math.max(0, inc - d) });
+  }
+  const sum = k => months.reduce((s, x) => s + x[k], 0);
+  return { branch, drw, inc, months, total24: sum('both'), first12: months[0].both, after12: months[12].both, why, ob, exWeighted };
+}
+
+const won = v => v.toLocaleString('ko-KR') + '원';
+const man = v => (v / 10000).toLocaleString('ko-KR', { maximumFractionDigits: 1 }) + '만원';
+
+// KEAD 계산 예시(2026년 1분기) 재현
+function keadExample() {
+  const W = (name, hire, sev, sex, wage, insured = true, minWage = true) => ({ name, hire, sev, sex, wage, insured, minWage });
+  const ws = [W('홍길동', 1, 'mild', 'M', 2500000), W('김경선', 2, 'mild', 'F', 2500000), W('김영철', 3, 'severe', 'M', 800000),
+    W('이민성', 4, 'mild', 'M', 2500000, false), W('정숙이', 5, 'mild', 'F', 500000, true, false), W('진동이', 6, 'mild', 'M', 2500000)];
+  const r = RATE_PERMILLE.private;
+  const m = [80, 60, 100].map(n => incentiveMonth(n, r, ws).amount);
+  return { months: m, total: m.reduce((a, b) => a + b, 0), expect: [350000, 830000, 0], expectTotal: 1180000 };
+}
+</script>
+
+<script>
+const $ = id => document.getElementById(id);
+const BR = {
+  A: ['50인 미만 · 등록 안 함', '직장복귀지원금만 받습니다'],
+  B: ['50인 미만 · 장애인 등록', '직장복귀지원금, 조건이 맞으면 장려금(서로 뺌)'],
+  C: ['50인 이상 · 등록 안 함', '직장복귀지원금만 받습니다'],
+  D1: ['50인 이상 · 등록 · 의무고용률 안', '두 지원금 모두 없음(고용부담금 감소)'],
+  D2: ['50인 이상 · 등록 · 의무고용률 초과', '직장복귀지원금 대상, 장려금은 기준인원을 넘을 때만(서로 뺌)']
+};
+const REG = { none: '등록 안 함', mild: '경증으로 등록', severe: '중증으로 등록' };
+const int = (id, lo, hi) => { const v = Math.floor(Number($(id).value)); return Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : lo; };
+
+function read() {
+  return {
+    n: int('n', 1, 100000), sector: $('sector').value, grade: $('grade').value, sex: $('sex').value,
+    wage: int('wage', 0, 100000000),
+    ex: { mm: int('em', 0, 999), mf: int('ef', 0, 999), sm: int('sm', 0, 999), sf: int('sf', 0, 999), wage: int('ew', 0, 100000000) },
+    reg: document.querySelector('input[name=reg]:checked').value
+  };
+}
+
+function render() {
+  const inp = read();
+  const exCount = inp.ex.mm + inp.ex.mf + inp.ex.sm + inp.ex.sf;
+  const err = $('err');
+  if (exCount + 1 > inp.n) { err.textContent = `상시근로자 수(${inp.n}명)가 장애인 직원 ${exCount}명과 복귀 근로자를 합친 수보다 적습니다. 상시근로자 수를 늘려 주세요.`; err.hidden = false; }
+  else err.hidden = true;
+
+  const res = { none: evaluate(inp, 'none'), mild: evaluate(inp, 'mild'), severe: evaluate(inp, 'severe') };
+  const cur = res[inp.reg];
+  const [bt, bs] = BR[cur.branch];
+  $('verdict').innerHTML = `<span class="tag">해당 칸 · ${bt}</span><h3>${bs}</h3>
+    <p>${REG[inp.reg]} 기준, 처음 12개월은 월 <b>${won(cur.first12)}</b>, 13개월째부터는 월 <b>${won(cur.after12)}</b>을 받을 것으로 계산됩니다. 24개월 합계 ${won(cur.total24)}.</p>`;
+
+  $('cmp').innerHTML = ['none', 'mild', 'severe'].map(k => {
+    const x = res[k];
+    const pill = x.total24 === 0 ? '<span class="pill no">지원 없음</span>' : (x.drw > 0 && x.inc > 0 ? '<span class="pill part">서로 뺌</span>' : '<span class="pill ok">한 가지</span>');
+    return `<div class="card${k === inp.reg ? ' sel' : ''}"><div class="h"><span>${REG[k]}</span>${pill}</div>
+      <div class="big">${man(x.total24)}</div>
+      <div class="sub">1~12개월 월 ${man(x.first12)} · 13개월~ 월 ${man(x.after12)}</div>
+      <div class="sub">${BR[x.branch][0]}</div></div>`;
+  }).join('');
+
+  $('tblTitle').textContent = `월별 지급 예상 — ${REG[inp.reg]}`;
+  const rows = cur.months.filter(x => x.m <= 13 || x.m === 24);
+  const td = v => `<td class="num">${v ? v.toLocaleString('ko-KR') : '–'}</td>`;
+  $('tbl').innerHTML = `<thead><tr><th rowspan="2">월</th><th colspan="2">따로 신청할 때 금액</th><th>실제 합계</th><th colspan="2">장려금이 먼저 지급되면</th><th colspan="2">복귀지원금이 먼저 지급되면</th></tr>
+    <tr><th>복귀지원금</th><th>장려금</th><th></th><th>장려금</th><th>복귀지원금</th><th>복귀지원금</th><th>장려금</th></tr></thead><tbody>` +
+    rows.map(x => `<tr class="${x.m === 13 ? 'split' : ''}"><td>${x.m === 24 ? '…24' : x.m}</td>${td(x.drw)}${td(x.inc)}${td(x.both)}${td(x.aInc)}${td(x.aDrw)}${td(x.bDrw)}${td(x.bInc)}</tr>`).join('') +
+    `<tr class="sum"><td>24개월</td>${td(cur.months.reduce((s, x) => s + x.drw, 0))}${td(cur.months.reduce((s, x) => s + x.inc, 0))}${td(cur.total24)}<td colspan="4" style="text-align:left;font-weight:400;color:var(--muted)">원 단위 · 14~23개월은 13개월과 같음</td></tr></tbody>`;
+
+  $('why').innerHTML = cur.why.map(t => `<li>${t}</li>`).join('');
+}
+
+function check() {
+  const k = keadExample();
+  const ok = k.months.every((v, i) => v === k.expect[i]) && k.total === k.expectTotal;
+  $('check').innerHTML = `공단 계산 예시(2026년 1분기, 민간) 재현: 1월 ${k.months[0].toLocaleString()} · 2월 ${k.months[1].toLocaleString()} · 3월 ${k.months[2].toLocaleString()} → 합계 ${k.total.toLocaleString()}원 ` +
+    (ok ? '<span class="ok">✓ 예시 1,180,000원과 일치</span>' : '<span class="bad">✗ 예시와 다름</span>');
+}
+
+$('f').addEventListener('input', render);
+$('f').addEventListener('submit', e => e.preventDefault());
+render(); check();
+</script>
+</body>
+</html>
